@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Traffic Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Network Traffic Dashboard</h1>
+    </header>
+    <main>
+        <section id="dashboard">
+            <div id="chart-container">
+                <canvas id="trafficChart"></canvas>
+                <p>Drop the file containing dataset of the captured packets and their specifics</p>
+                <div class="upload-container">
+                    <label for="file-input" class="upload-box">
+                        <span>Click to Upload a File</span>
+                        <input type="file" id="file-input" class="file-input" />
+                    </label>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.getElementById('file-input').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                alert('Please select a file!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('File uploaded successfully and is being processed!');
+                    console.log(result.message);
+                } else {
+                    alert('File upload failed: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while uploading the file.');
+            }
+        });
+    </script>
+</body>
+</html>
